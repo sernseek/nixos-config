@@ -2,11 +2,23 @@
 let
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
   localNiriConfPath = "/etc/nixos/modules/home/niri/conf";
+  noctaliaIpc = pkgs.writeShellScriptBin "noctalia-ipc" ''
+    set -eu
+
+    running_shell_path="$(${pkgs.procps}/bin/ps -eo args | ${pkgs.gnused}/bin/sed -n 's#.* -p \(/nix/store/[^ ]*-noctalia-shell-[^ ]*/share/noctalia-shell\).*#\1#p' | ${pkgs.coreutils}/bin/head -n1)"
+
+    if [ -n "$running_shell_path" ] && [ -x "''${running_shell_path%/share/noctalia-shell}/bin/noctalia-shell" ]; then
+      exec "''${running_shell_path%/share/noctalia-shell}/bin/noctalia-shell" ipc call "$@"
+    fi
+
+    exec /etc/profiles/per-user/${config.home.username}/bin/noctalia-shell ipc call "$@"
+  '';
 in
 {
   home.packages = with pkgs; [
     # Niri v25.08+ uses on-demand Xwayland via xwayland-satellite.
     xwayland-satellite
+    noctaliaIpc
   ];
 
   xdg.configFile = {
@@ -53,7 +65,12 @@ in
     Install.WantedBy = [ "niri.service" ];
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 600 \"${pkgs.noctalia-shell}/bin/noctalia-shell ipc call lockScreen lock\" before-sleep \"${pkgs.noctalia-shell}/bin/noctalia-shell ipc call lockScreen lock\"";
+      ExecStart = ''
+        ${pkgs.swayidle}/bin/swayidle -w \
+          timeout 600 "/etc/profiles/per-user/${config.home.username}/bin/noctalia-ipc lockScreen lock" \
+          timeout 630 "/run/current-system/sw/bin/niri msg action power-off-monitors" \
+          before-sleep "/etc/profiles/per-user/${config.home.username}/bin/noctalia-ipc lockScreen lock"
+      '';
       Restart = "on-failure";
       RestartSec = 1;
       TimeoutStopSec = 10;

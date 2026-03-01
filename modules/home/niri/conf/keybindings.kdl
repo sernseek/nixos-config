@@ -5,22 +5,22 @@ binds {
     Mod+T { spawn "alacritty"; }
 
     // 启动应用程序和控制中心
-    Mod+A { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Mod+A { spawn "noctalia-ipc" "launcher" "toggle"; }
 
-    // 锁屏
-     Ctrl+Alt+L { spawn "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
+    // 锁屏并立即熄屏
+    Ctrl+Alt+L { spawn-sh "noctalia-ipc lockScreen lock && sleep 0.5 && /run/current-system/sw/bin/niri msg action power-off-monitors"; }
 
     // 音量控制快捷键。这里使用了 noctalia-shell 的 IPC 接口，
-    XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "increase"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "decrease"; }
-    XF86AudioMute allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteOutput"; }
-    XF86AudioMicMute allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "volume" "muteInput"; }
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media playPause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media pause"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media next"; }
-    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "increase"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia-shell" "ipc" "call" "brightness" "decrease"; }
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia-ipc" "volume" "increase"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia-ipc" "volume" "decrease"; }
+    XF86AudioMute allow-when-locked=true { spawn "noctalia-ipc" "volume" "muteOutput"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "noctalia-ipc" "volume" "muteInput"; }
+    XF86AudioPlay        allow-when-locked=true { spawn-sh "noctalia-ipc media playPause"; }
+    XF86AudioStop        allow-when-locked=true { spawn-sh "noctalia-ipc media pause"; }
+    XF86AudioPrev        allow-when-locked=true { spawn-sh "noctalia-ipc media previous"; }
+    XF86AudioNext        allow-when-locked=true { spawn-sh "noctalia-ipc media next"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia-ipc" "brightness" "increase"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia-ipc" "brightness" "decrease"; }
     XF86KbdBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%+"; }
     XF86KbdBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%-"; }
     // 显示概览模式，展示所有窗口和工作区的缩略图，方便快速切换。
@@ -173,9 +173,9 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 
     // Utility shortcuts
-    Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
-    Mod+C { spawn "noctalia-shell" "ipc" "call" "launcher" "calculator"; }
+    Mod+Shift+V { spawn "noctalia-ipc" "launcher" "clipboard"; }
+    Mod+C { spawn "noctalia-ipc" "launcher" "calculator"; }
 
-    Mod+S { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
-    Mod+E { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }
+    Mod+S { spawn "noctalia-ipc" "controlCenter" "toggle"; }
+    Mod+E { spawn "noctalia-ipc" "sessionMenu" "toggle"; }
 }
