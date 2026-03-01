@@ -1,0 +1,9 @@
+// Generic local hardware profile for niri.
+// You can tune output name/scale/mode via `niri msg outputs`.
+
+output "*" {
+    scale 1.0
+    transform "normal"
+    position x=0 y=0
+}
+
