@@ -9,13 +9,24 @@
     extraOpts = "-d /var/lib/mihomo";
   };
 
-  systemd.services.mihomo.serviceConfig = {
-    RestrictAddressFamilies = [
-      "AF_UNIX"
-      "AF_INET"
-      "AF_INET6"
-      "AF_NETLINK"
-      "AF_PACKET"
-    ];
+  systemd.services.mihomo = {
+    preStart = ''
+      ${pkgs.coreutils}/bin/install -d -m 0755 /var/lib/mihomo/providers
+
+      for file in /etc/nixos/secrets/providers/*; do
+        [ -f "$file" ] || continue
+        ${pkgs.coreutils}/bin/install -m 0644 "$file" /var/lib/mihomo/providers/"$(${pkgs.coreutils}/bin/basename "$file")"
+      done
+    '';
+
+    serviceConfig = {
+      RestrictAddressFamilies = [
+        "AF_UNIX"
+        "AF_INET"
+        "AF_INET6"
+        "AF_NETLINK"
+        "AF_PACKET"
+      ];
+    };
   };
 }
