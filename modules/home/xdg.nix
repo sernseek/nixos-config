@@ -14,7 +14,7 @@
   xdg.desktopEntries.code = {
     name = "Visual Studio Code";
     genericName = "Text Editor";
-    exec = "${pkgs.vscode}/bin/code --password-store=gnome-libsecret %F";
+    exec = "${pkgs.vscode}/bin/code --password-store=gnome-libsecret --enable-features=UseOzonePlatform --ozone-platform=wayland %F";
     icon = "vscode";
     terminal = false;
     categories = [

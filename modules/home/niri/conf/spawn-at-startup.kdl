@@ -1,4 +1,3 @@
 // Start UI shell components required by IPC keybindings.
 spawn-at-startup "/etc/profiles/per-user/sernseek/bin/noctalia-shell"
 spawn-at-startup "fcitx5"
-spawn-at-startup "clash-verge"
