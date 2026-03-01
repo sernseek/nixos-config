@@ -17,7 +17,7 @@
 
   services.gpg-agent = {
     enable = true;
-    pinentry.package = pkgs.pinentry-curses;
+    pinentry.package = pkgs.pinentry-gnome3;
   };
 
   programs.starship = {
@@ -50,6 +50,7 @@
     enable = true;
     interactiveShellInit = ''
       set -gx GPG_TTY (tty)
+      gpg-connect-agent updatestartuptty /bye >/dev/null
     '';
     shellAliases = {
       code = "code --password-store=gnome-libsecret";
