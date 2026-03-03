@@ -9,5 +9,6 @@
     ./base/packages.nix
     ./base/fonts.nix
     ./base/input-method.nix
+    ./base/bluetooth.nix
   ];
 }
