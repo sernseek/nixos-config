@@ -10,5 +10,6 @@
     ./base/fonts.nix
     ./base/input-method.nix
     ./base/bluetooth.nix
+    ./desktop/services.nix
   ];
 }

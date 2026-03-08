@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+  services.gpg-agent = {
+    enable = true;
+    pinentry.package = pkgs.pinentry-gnome3;
+  };
+
   systemd.user.services.darkman-set-dark = {
     Unit = {
       Description = "Set dark mode (fixed time)";

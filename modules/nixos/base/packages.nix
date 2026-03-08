@@ -4,8 +4,10 @@
     fish
     git
     helix
-    nixfmt
     vim
     wget
+    zoxide
+    nixd
+    nixfmt
   ];
 }

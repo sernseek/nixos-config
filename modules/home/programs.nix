@@ -15,11 +15,6 @@
 
   programs.gpg.enable = true;
 
-  services.gpg-agent = {
-    enable = true;
-    pinentry.package = pkgs.pinentry-gnome3;
-  };
-
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
@@ -59,5 +54,10 @@
       la = "ls -A --color=auto";
       l = "ls -CF --color=auto";
     };
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
   };
 }
