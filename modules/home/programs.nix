@@ -30,20 +30,37 @@
     enable = true;
     settings = {
       env.TERM = "xterm-256color";
+      window.decorations = "None";
+      window.dynamic_padding = true;
+      window.padding = {
+        x = 8;
+        y = 8;
+      };
       font = {
         size = 12;
-        draw_bold_text_with_bright_colors = true;
+        normal.family = "JetBrainsMono Nerd Font";
+        bold.family = "JetBrainsMono Nerd Font";
+        italic.family = "JetBrainsMono Nerd Font";
+        bold_italic.family = "JetBrainsMono Nerd Font";
       };
       scrolling.multiplier = 5;
       selection.save_to_clipboard = true;
     };
+    theme = "tokyo_night";
   };
-
+  programs.zellij = {
+    enable = true;
+    enableFishIntegration = true;
+    settings = {
+      theme = "tokyo-night";
+      show_startup_tips = false;
+    };
+  };
   programs.helix.enable = true;
-
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
+      set -g fish_greeting
       set -gx GPG_TTY (tty)
       gpg-connect-agent updatestartuptty /bye >/dev/null
     '';

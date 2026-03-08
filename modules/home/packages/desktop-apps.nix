@@ -11,7 +11,6 @@
 
     # Terminal emulator
     foot
-    kitty
     alacritty
     ghostty
 
