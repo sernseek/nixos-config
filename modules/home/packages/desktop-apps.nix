@@ -17,7 +17,6 @@
 
     # Desktop components
     noctalia-shell
-    darkman
 
     # File manager
     yazi

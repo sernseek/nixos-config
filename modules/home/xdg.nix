@@ -42,31 +42,4 @@
       "password-store": "gnome-libsecret"
     }
   '';
-
-  xdg.configFile."darkman/config.yaml".text = ''
-    dbusserver: true
-    portal: true
-  '';
-
-  xdg.configFile."darkman/dark-mode.d/10-theme.sh" = {
-    executable = true;
-    text = ''
-      #!${pkgs.bash}/bin/bash
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme true
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
-      systemctl --user try-restart xdg-desktop-portal.service xdg-desktop-portal-gtk.service || true
-    '';
-  };
-
-  xdg.configFile."darkman/light-mode.d/10-theme.sh" = {
-    executable = true;
-    text = ''
-      #!${pkgs.bash}/bin/bash
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/gtk-application-prefer-dark-theme false
-      ${pkgs.dconf}/bin/dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita'"
-      systemctl --user try-restart xdg-desktop-portal.service xdg-desktop-portal-gtk.service || true
-    '';
-  };
 }
