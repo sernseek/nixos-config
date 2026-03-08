@@ -5,6 +5,7 @@ binds {
     // ===== 应用启动 =====
     Mod+T { spawn "alacritty"; }
     Mod+E { spawn "thunar"; }
+    Mod+B { spawn "brave"; }
     Mod+A { spawn "noctalia-ipc" "launcher" "toggle"; }
     Mod+Shift+V { spawn "noctalia-ipc" "launcher" "clipboard"; }
     Mod+C { spawn "noctalia-ipc" "launcher" "calculator"; }

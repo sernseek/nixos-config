@@ -7,6 +7,8 @@
       "wheel"
       "networkmanager"
       "video"
+      "libvirtd"
+      "kvm"
     ];
   };
 

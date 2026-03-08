@@ -6,6 +6,7 @@
     ./modules/nixos/nvidia.nix
     ./modules/nixos/desktop/niri.nix
     ./modules/nixos/desktop/programs.nix
+    ./modules/nixos/desktop/virtualization.nix
   ];
 
   system.stateVersion = "26.05";
