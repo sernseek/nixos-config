@@ -28,6 +28,7 @@
     socat
     nmap
     ipcalc
+    proxychains-ng
 
     # misc
     cowsay
@@ -62,5 +63,7 @@
     ethtool
     pciutils
     usbutils
+    bottom
+    htop
   ];
 }

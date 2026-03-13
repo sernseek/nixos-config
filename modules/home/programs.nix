@@ -54,6 +54,8 @@
     settings = {
       theme = "tokyo-night";
       show_startup_tips = false;
+      simplified_ui = true;
+      pane_frames = false;
     };
   };
   programs.helix.enable = true;

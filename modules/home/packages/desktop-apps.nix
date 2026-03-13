@@ -33,5 +33,12 @@
     clash-verge-rev
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
+    wechat
+    onlyoffice-desktopeditors
+    zotero
+    libreoffice
+    wemeet
+    qq
+    termius
   ];
 }
