@@ -40,5 +40,6 @@
     wemeet
     qq
     termius
+    gamescope
   ];
 }

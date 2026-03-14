@@ -1,8 +1,10 @@
 // Generic local hardware profile for niri.
 // You can tune output name/scale/mode via `niri msg outputs`.
 
-output "*" {
-    scale 1.0
+output "eDP-1" {
+    mode "2560x1600@165.004"
+    scale 1.5
+    variable-refresh-rate
     transform "normal"
     position x=0 y=0
 }
