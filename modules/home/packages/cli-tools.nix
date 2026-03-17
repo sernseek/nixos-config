@@ -18,6 +18,7 @@
     eza
     fzf
     gh
+    dust
 
     # networking tools
     mtr

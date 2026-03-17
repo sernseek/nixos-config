@@ -41,5 +41,7 @@
     qq
     termius
     gamescope
+    tor-browser
+    localsend
   ];
 }
