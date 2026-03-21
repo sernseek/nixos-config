@@ -44,6 +44,8 @@
     gnupg
     pinentry-gnome3
     seahorse
+    wine-wayland
+    winetricks
 
     # nix related
     nix-output-monitor
