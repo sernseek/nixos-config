@@ -67,7 +67,6 @@
       gpg-connect-agent updatestartuptty /bye >/dev/null
     '';
     shellAliases = {
-      code = "code --password-store=gnome-libsecret --enable-features=UseOzonePlatform --ozone-platform=wayland";
       ls = "ls --color=auto";
       ll = "ls -alF --color=auto";
       la = "ls -A --color=auto";
@@ -78,5 +77,12 @@
   programs.zoxide = {
     enable = true;
     enableFishIntegration = true;
+  };
+
+  programs.vscode = {
+    enable = true;
+    argvSettings = {
+      password-store = "gnome-libsecret";
+    };
   };
 }

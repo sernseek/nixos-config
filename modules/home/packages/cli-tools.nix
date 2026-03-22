@@ -49,6 +49,7 @@
 
     # nix related
     nix-output-monitor
+    nix-alien
 
     # productivity
     glow

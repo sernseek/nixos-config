@@ -43,5 +43,6 @@
     gamescope
     tor-browser
     localsend
+    appimage-run
   ];
 }

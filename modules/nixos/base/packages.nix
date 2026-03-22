@@ -9,5 +9,6 @@
     zoxide
     nixd
     nixfmt
+    nix-alien
   ];
 }
