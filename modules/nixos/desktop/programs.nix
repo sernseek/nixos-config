@@ -15,6 +15,7 @@
     plugins = with pkgs; [
       thunar-archive-plugin
       thunar-volman
+      thunar-shares-plugin
     ];
   };
 }

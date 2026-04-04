@@ -9,4 +9,15 @@
     "119.29.29.29"
     "114.114.114.114"
   ];
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      8080
+      53317
+    ];
+    allowedUDPPorts = [
+      8080
+      53317
+    ];
+  };
 }

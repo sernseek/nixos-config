@@ -20,16 +20,21 @@
     # File manager
     yazi
     thunar
+    kdePackages.dolphin
+    kdePackages.dolphin-plugins
 
     # Media / viewer / recorder
     mpv
     imv
     obs-studio
+    vlc
 
     # Input method schema
     rime-ice
 
     # Other desktop utilities
+    transmission_4-gtk
+    qbittorrent-enhanced
     clash-verge-rev
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
@@ -44,5 +49,6 @@
     tor-browser
     localsend
     appimage-run
+    nautilus
   ];
 }

@@ -14,7 +14,6 @@
   };
 
   programs.gpg.enable = true;
-
   programs.starship = {
     enable = true;
     enableFishIntegration = true;
@@ -85,4 +84,5 @@
       password-store = "gnome-libsecret";
     };
   };
+  programs.tealdeer.enableAutoUpdates = true;
 }

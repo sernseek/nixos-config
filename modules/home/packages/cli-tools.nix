@@ -19,6 +19,10 @@
     fzf
     gh
     dust
+    inetutils
+    tealdeer
+    uv
+    ouch
 
     # networking tools
     mtr
