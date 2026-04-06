@@ -80,9 +80,6 @@
 
   programs.vscode = {
     enable = true;
-    argvSettings = {
-      password-store = "gnome-libsecret";
-    };
   };
   programs.tealdeer.enableAutoUpdates = true;
 }

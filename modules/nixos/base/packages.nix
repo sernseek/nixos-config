@@ -4,6 +4,8 @@
     fish
     git
     helix
+    icu
+    ollama-cuda
     vim
     wget
     zoxide
