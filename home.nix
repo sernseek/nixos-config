@@ -1,12 +1,10 @@
 { ... }:
 {
   imports = [
-    ./modules/home/base.nix
-    ./modules/home/niri
+    ./modules/home
   ];
 
   home.username = "sernseek";
   home.homeDirectory = "/home/sernseek";
   home.stateVersion = "26.05";
 }
-

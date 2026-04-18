@@ -1,11 +1,10 @@
 { ... }:
 {
   imports = [
-    ./packages.nix
-    ./xdg.nix
+    ./niri.nix
     ./programs.nix
-    ./theme.nix
     ./services.nix
-    ./session.nix
+    ./fonts.nix
+    ./input-method.nix
   ];
 }

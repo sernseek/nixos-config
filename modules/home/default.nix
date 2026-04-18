@@ -1,0 +1,8 @@
+{ ... }:
+{
+  imports = [
+    ./packages
+    ./desktop
+    ./niri
+  ];
+}
