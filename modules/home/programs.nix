@@ -24,7 +24,6 @@
       line_break.disabled = true;
     };
   };
-
   programs.alacritty = {
     enable = true;
     settings = {

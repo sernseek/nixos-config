@@ -13,5 +13,6 @@
 
     # Development apps
     vscode
+    claude-code
   ];
 }
