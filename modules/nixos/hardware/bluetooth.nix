@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   hardware.bluetooth = {
     enable = true;
@@ -13,18 +13,9 @@
         DiscoverableTimeout = 0;
         PairableTimeout = 0;
       };
-      Policy = {
-        AutoEnable = true;
-      };
+      Policy.AutoEnable = true;
     };
   };
 
   services.blueman.enable = true;
-
-  hardware.steam-hardware.enable = true;
-  hardware.xpadneo.enable = true;
-
-  services.udev.packages = with pkgs; [
-    game-devices-udev-rules
-  ];
 }

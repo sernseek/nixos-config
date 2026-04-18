@@ -47,7 +47,6 @@
     zstd
     gnupg
     pinentry-gnome3
-    seahorse
     wine-wayland
     winetricks
 
