@@ -8,5 +8,6 @@
     ./users-shell.nix
     ./btrfs-snapshots.nix
     ./packages.nix
+    ./numlock.nix
   ];
 }
