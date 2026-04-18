@@ -55,7 +55,6 @@
       };
       theme = "tokyo_night";
     };
-
     zellij = {
       enable = true;
       enableFishIntegration = true;

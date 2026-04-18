@@ -3,6 +3,7 @@ let
   openPorts = [
     8080
     53317
+    2233
   ];
 in
 {

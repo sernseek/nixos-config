@@ -48,5 +48,6 @@
     localsend
     appimage-run
     nautilus
+    remmina
   ];
 }

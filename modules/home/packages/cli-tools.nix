@@ -23,6 +23,9 @@
     tealdeer
     uv
     ouch
+    xterm
+    wl-clipboard
+    xsel
 
     # networking tools
     mtr
