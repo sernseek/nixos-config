@@ -8,6 +8,10 @@ binds {
     Mod+B { spawn "brave"; }
     Mod+A { spawn "noctalia-ipc" "launcher" "toggle"; }
     Mod+Shift+V { spawn "noctalia-ipc" "launcher" "clipboard"; }
+    // Wayland → XWayland (:0)：从 Wayland 复制后按一下，粘进 VMware guest
+    Mod+Alt+V { spawn-sh "wl-paste -n | env DISPLAY=:0 xsel -ib"; }
+    // XWayland → Wayland：从 VMware guest/X11 app 复制后按一下，粘进 Wayland app
+    Mod+Alt+C { spawn-sh "env DISPLAY=:0 xsel -ob | wl-copy"; }
     Mod+C { spawn "noctalia-ipc" "launcher" "calculator"; }
     Mod+S { spawn "noctalia-ipc" "controlCenter" "toggle"; }
     Mod+Shift+E { spawn "noctalia-ipc" "sessionMenu" "toggle"; }
