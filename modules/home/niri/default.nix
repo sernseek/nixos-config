@@ -37,6 +37,41 @@ in
     executable = true;
   };
 
+  # Run noctalia-shell as a user service so stderr lands in journalctl and
+  # it auto-restarts on crash. Previously spawned via niri spawn-at-startup,
+  # which silently dropped QML warnings and didn't survive manual restarts.
+  systemd.user.services.noctalia-shell = {
+    Unit = {
+      Description = "Noctalia quickshell-based desktop shell";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Install.WantedBy = [ "niri.service" ];
+    Service = {
+      Type = "simple";
+      ExecStart = "/etc/profiles/per-user/${config.home.username}/bin/noctalia-shell";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
+  # fcitx5 IME — no upstream user service is generated for niri sessions, so
+  # define one explicitly. Matches the noctalia-shell pattern for logs/restart.
+  systemd.user.services.fcitx5 = {
+    Unit = {
+      Description = "Fcitx5 input method";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Install.WantedBy = [ "niri.service" ];
+    Service = {
+      Type = "simple";
+      ExecStart = "/run/current-system/sw/bin/fcitx5";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
+  };
+
   systemd.user.services.niri-flake-polkit = {
     Unit = {
       Description = "PolicyKit Authentication Agent provided by niri-flake";
@@ -49,28 +84,6 @@ in
     Service = {
       Type = "simple";
       ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
-
-  systemd.user.services.swayidle = {
-    Unit = {
-      Description = "Idle manager for niri (auto lock)";
-      After = [ "graphical-session.target" ];
-      Wants = [ "graphical-session-pre.target" ];
-      PartOf = [ "niri.service" ];
-    };
-    Install.WantedBy = [ "niri.service" ];
-    Service = {
-      Type = "simple";
-      ExecStart = ''
-        ${pkgs.swayidle}/bin/swayidle -w \
-          timeout 600 "/etc/profiles/per-user/${config.home.username}/bin/noctalia-ipc lockScreen lock" \
-          timeout 630 "/run/current-system/sw/bin/niri msg action power-off-monitors" \
-          before-sleep "/etc/profiles/per-user/${config.home.username}/bin/noctalia-ipc lockScreen lock"
-      '';
       Restart = "on-failure";
       RestartSec = 1;
       TimeoutStopSec = 10;

@@ -6,11 +6,14 @@ let
   wl2xClipboardSync = pkgs.writeShellScript "wl2x-clipboard-sync" ''
     set -u
     export PATH=${pkgs.wl-clipboard}/bin:${pkgs.xsel}/bin:${pkgs.coreutils}/bin:$PATH
-    exec wl-paste --watch sh -c '
+    # Text only. Images are binary and xsel is text-only — piping image data
+    # through it corrupts the X11 selection and triggers satellite to steal
+    # the source Wayland app's selection, freezing it.
+    exec wl-paste --type text --watch sh -c '
       wl=$(mktemp) || exit 0
       x=$(mktemp) || { rm -f "$wl"; exit 0; }
       trap "rm -f \"$wl\" \"$x\"" EXIT
-      wl-paste -n > "$wl" 2>/dev/null || exit 0
+      wl-paste --type text -n > "$wl" 2>/dev/null || exit 0
       [ -s "$wl" ] || exit 0
       DISPLAY=:0 xsel -ob > "$x" 2>/dev/null || true
       cmp -s "$wl" "$x" && exit 0
