@@ -15,6 +15,8 @@
         tag.gpgsign = true;
         http.proxy = "socks5h://127.0.0.1:7890";
         https.proxy = "socks5h://127.0.0.1:7890";
+        credential."https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        credential."https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
       };
     };
 
