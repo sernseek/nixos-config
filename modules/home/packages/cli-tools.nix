@@ -26,6 +26,7 @@
     xterm
     wl-clipboard
     xsel
+    ripgrep-all
 
     # networking tools
     mtr
