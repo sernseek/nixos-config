@@ -20,5 +20,10 @@
       # AMD SME only; leave disabled on Intel hosts.
       # "mem_encrypt=on"
     ];
+
+    # DDR5 SPD hub driver breaks S3 resume on Intel 12th gen+ laptops
+    # (spd5118_resume returns -ENXIO → system hangs on wake). Only provides
+    # DIMM temperature sensors, which we don't need.
+    blacklistedKernelModules = [ "spd5118" ];
   };
 }
