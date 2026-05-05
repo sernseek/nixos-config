@@ -26,7 +26,7 @@ in
     "niri/keybindings.kdl".source = mkSymlink "${localNiriConfPath}/keybindings.kdl";
     "niri/noctalia-shell.kdl".source = mkSymlink "${localNiriConfPath}/noctalia-shell.kdl";
     "niri/spawn-at-startup.kdl".source = mkSymlink "${localNiriConfPath}/spawn-at-startup.kdl";
-    "niri/niri-hardware.kdl".source = ./niri-hardware.kdl;
+    "niri/niri-hardware.kdl".source = mkSymlink "/etc/nixos/modules/home/niri/niri-hardware.kdl";
   };
 
   home.file.".wayland-session" = {

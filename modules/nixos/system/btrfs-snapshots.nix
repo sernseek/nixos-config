@@ -30,7 +30,7 @@
 
   services.snapper = {
     snapshotRootOnBoot = true;
-    snapshotInterval = "6h";
+    snapshotInterval = "00/6:00:00";
     cleanupInterval = "1d";
     persistentTimer = true;
 

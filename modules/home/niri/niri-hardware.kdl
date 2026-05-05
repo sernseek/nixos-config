@@ -4,8 +4,7 @@
 output "eDP-1" {
     mode "2560x1600@165.004"
     scale 1.5
-    variable-refresh-rate
+    // variable-refresh-rate
     transform "normal"
     position x=0 y=0
 }
-
