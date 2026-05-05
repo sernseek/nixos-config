@@ -49,6 +49,15 @@ in
     Install.WantedBy = [ "niri.service" ];
     Service = {
       Type = "simple";
+      # Noctalia's Qt lock screen can crash under niri's session lock when
+      # the fcitx Wayland input-method path tries to map an xdg_popup while
+      # typing the password. Keep fcitx for regular apps, but make the shell
+      # itself use Qt's simple built-in input path.
+      Environment = [
+        "QT_IM_MODULE=compose"
+        "GTK_IM_MODULE=gtk-im-context-simple"
+        "XMODIFIERS=@im=none"
+      ];
       ExecStart = "/etc/profiles/per-user/${config.home.username}/bin/noctalia-shell";
       Restart = "on-failure";
       RestartSec = 2;

@@ -8,7 +8,7 @@ let
 
   vscode = lib.hiPrio (
     pkgs.writeShellScriptBin "code" ''
-      exec ${pkgs.vscode}/bin/code --password-store=gnome-libsecret --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"
+      exec ${pkgs.vscode}/bin/code --password-store=gnome-libsecret --enable-features=UseOzonePlatform --ozone-platform=wayland --disable-gpu "$@"
     ''
   );
 
