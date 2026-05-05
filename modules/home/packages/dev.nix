@@ -14,5 +14,6 @@
     # Development apps
     vscode
     claude-code
+    codex
   ];
 }

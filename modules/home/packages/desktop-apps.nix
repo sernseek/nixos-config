@@ -4,6 +4,8 @@
     # Browser
     brave
     firefox
+    chromium
+    google-chrome
 
     # Communication / notes
     telegram-desktop
@@ -49,5 +51,6 @@
     appimage-run
     nautilus
     remmina
+    discord
   ];
 }
