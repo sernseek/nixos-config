@@ -5,5 +5,6 @@
     ./docker.nix
     ./vmware.nix
     ./ai.nix
+    ./tailscale.nix
   ];
 }

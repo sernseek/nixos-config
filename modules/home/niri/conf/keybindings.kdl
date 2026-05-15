@@ -17,7 +17,7 @@ binds {
     Mod+Shift+E { spawn "noctalia-ipc" "sessionMenu" "toggle"; }
 
     // ===== 锁屏与电源显示 =====
-    Ctrl+Alt+L { spawn "noctalia-ipc" "lockScreen" "lock"; }
+    Ctrl+Alt+L { spawn-sh "noctalia-ipc lockScreen lock && sleep 0.5 && /run/current-system/sw/bin/niri msg action power-off-monitors"; }
     Mod+Shift+P { power-off-monitors; }
 
     // ===== 音量、媒体与亮度（锁屏可用） =====

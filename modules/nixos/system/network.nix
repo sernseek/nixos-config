@@ -4,12 +4,15 @@ let
     8080
     53317
     2233
+    # game server
+    27015
+    27016
   ];
 in
 {
   networking = {
     hostName = "nixos-main";
-    enableIPv6 = false;
+    enableIPv6 = true;
 
     networkmanager = {
       enable = true;
