@@ -27,8 +27,32 @@
     options = "--delete-older-than 7d";
   };
 
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    icu
-  ];
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc
+      zlib
+      zstd
+      curl
+      openssl
+      attr
+      libssh
+      bzip2
+      libxml2
+      acl
+      libsodium
+      util-linux
+      xz
+      systemd
+      icu
+      glib
+      nss
+      nspr
+      expat
+      fontconfig
+      freetype
+      libGL
+      alsa-lib
+    ];
+  };
 }

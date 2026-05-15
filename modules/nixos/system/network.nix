@@ -1,14 +1,4 @@
 { ... }:
-let
-  openPorts = [
-    8080
-    53317
-    2233
-    # game server
-    27015
-    27016
-  ];
-in
 {
   networking = {
     hostName = "nixos-main";
@@ -19,16 +9,25 @@ in
       dns = "none";
     };
 
+    # Fallback resolvers — mihomo TUN handles DNS in normal operation.
+    # AliDNS + DNSPod only; 114DNS dropped (history of NXDOMAIN rewriting).
     nameservers = [
       "223.5.5.5"
       "119.29.29.29"
-      "114.114.114.114"
     ];
 
     firewall = {
       enable = true;
-      allowedTCPPorts = openPorts;
-      allowedUDPPorts = openPorts;
+      # Steam dedicated-server / remote-play ports are opened by
+      # programs.steam.{dedicatedServer,remotePlay,localNetworkGameTransfers}.openFirewall.
+      allowedTCPPorts = [
+        8080
+        2233
+        53317 # LocalSend
+      ];
+      allowedUDPPorts = [
+        53317 # LocalSend multicast discovery
+      ];
     };
   };
 }

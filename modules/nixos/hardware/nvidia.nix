@@ -12,7 +12,6 @@
       # hardware.nvidia.open = true on driver 560+, otherwise GUI fails to
       # start after rebuild (learned the hard way).
       enable = true;
-      finegrained = false;
     };
     # NVIDIA open kernel modules (still proprietary userspace). Required for
     # suspend/resume + powerManagement to work on driver 560+ for Turing/Ada.

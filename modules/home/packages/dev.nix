@@ -6,6 +6,8 @@
     nodejs
     pnpm
     rustup
+    gcc
+    pkg-config
     deno
     python3
     jdk

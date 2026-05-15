@@ -59,11 +59,11 @@ Categories under [modules/home/](modules/home/):
 - A `noctalia-ipc` wrapper script is generated in the same file; it locates the currently-running `noctalia-shell` binary and forwards IPC calls. Swayidle user service uses it for auto-lock.
 
 ### Secrets
-- Git submodule `nixos-secrets` → `https://github.com/sernseek/nixos-secrets.git`, mounted at `nixos-secrets/`.
-- Consumed directly from `/etc/nixos/nixos-secrets/` at activation time — e.g. [clash.nix](modules/nixos/services/clash.nix) reads `mihomo-config.yaml` and installs provider files into `/var/lib/mihomo/providers` via a `preStart` hook. Do not move or rename this directory; the path is hard-coded.
+- Git submodule `nixos-secrets` → `https://github.com/sernseek/nixos-secrets.git`, mounted at `nixos-secrets/`. Directory and files are kept at `0700`/`0600` — never relax these.
+- Loaded into `/var/lib/mihomo/` at service start by an `ExecStartPre` hook (root-privileged via `+` prefix) in [clash.nix](modules/nixos/services/clash.nix), which `chown`s them to the dynamic `mihomo` user. Do not move or rename this directory; the path is hard-coded.
 
 ### Networking quirks (China-specific)
-- IPv6 disabled; DNS pinned to AliDNS / DNSPod / 114.
+- IPv6 enabled; fallback DNS = AliDNS + DNSPod (mihomo TUN handles DNS in normal operation).
 - Nix substituters list [modules/nixos/system/nix-settings.nix](modules/nixos/system/nix-settings.nix) prioritizes USTC / SJTU / Tsinghua mirrors before `cache.nixos.org`.
 - Mihomo runs in **TUN mode** ([clash.nix](modules/nixos/services/clash.nix)) — system-wide proxy. When debugging network issues, check `systemctl status mihomo` before assuming DNS/firewall problems.
 

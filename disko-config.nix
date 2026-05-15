@@ -34,8 +34,6 @@
                       mountOptions = [
                         "compress=zstd:3"
                         "noatime"
-                        "ssd"
-                        "space_cache=v2"
                       ];
                     };
                     "/home" = {
@@ -43,8 +41,6 @@
                       mountOptions = [
                         "compress=zstd:3"
                         "noatime"
-                        "ssd"
-                        "space_cache=v2"
                       ];
                     };
                     "/nix" = {
@@ -52,8 +48,6 @@
                       mountOptions = [
                         "compress=zstd:3"
                         "noatime"
-                        "ssd"
-                        "space_cache=v2"
                       ];
                     };
                     "/swap" = {
@@ -61,7 +55,6 @@
                       mountOptions = [
                         "noatime"
                         "nodatacow"
-                        "compress=no"
                       ];
                       swap.swapfile.size = "32G";
                     };

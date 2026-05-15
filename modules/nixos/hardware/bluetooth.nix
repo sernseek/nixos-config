@@ -7,11 +7,11 @@
       General = {
         Experimental = true;
         FastConnectable = true;
-        JustWorksRepairing = "always";
-        Privacy = "off";
+        JustWorksRepairing = "confirm";
+        Privacy = "device";
         ControllerMode = "dual";
-        DiscoverableTimeout = 0;
-        PairableTimeout = 0;
+        DiscoverableTimeout = 180;
+        PairableTimeout = 180;
       };
       Policy.AutoEnable = true;
     };
