@@ -17,5 +17,7 @@
     vscode
     claude-code
     codex
+    jetbrains.datagrip
+    zed-editor
   ];
 }
