@@ -24,6 +24,14 @@ let
     ''
   );
 
+  teamspeak = lib.hiPrio (
+    pkgs.writeShellScriptBin "TeamSpeak" ''
+      exec env LD_LIBRARY_PATH="${
+        pkgs.lib.makeLibraryPath [ pkgs.gcc-unwrapped.lib ]
+      }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" ${pkgs.teamspeak6-client}/bin/TeamSpeak "$@"
+    ''
+  );
+
   # Telegram Desktop on Linux has a long-standing bug (#26782, #29946,
   # #28473) where it doesn't read xdg-portal color-scheme unless
   # QT_QPA_PLATFORMTHEME=xdgdesktopportal is set — otherwise "Follow
@@ -40,6 +48,7 @@ in
     vscode
     wechat
     obs
+    teamspeak
     telegram-desktop
   ];
 }

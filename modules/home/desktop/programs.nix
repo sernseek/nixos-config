@@ -59,7 +59,7 @@
     };
     zellij = {
       enable = true;
-      enableFishIntegration = true;
+      # enableFishIntegration = true;
       settings = {
         theme = "tokyo-night";
         show_startup_tips = false;

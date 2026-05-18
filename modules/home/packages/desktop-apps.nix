@@ -52,5 +52,6 @@
     nautilus
     remmina
     discord
+    teamspeak6-client
   ];
 }
