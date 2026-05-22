@@ -19,5 +19,8 @@
     codex
     jetbrains.datagrip
     zed-editor
+
+    # devops
+    azure-cli
   ];
 }
