@@ -12,6 +12,7 @@
     python3
     jdk
     nixd
+    android-tools
 
     # Development apps
     vscode
