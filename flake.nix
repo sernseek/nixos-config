@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "git+https://mirrors.nju.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
+    nixpkgs-stable.url = "git+https://mirrors.nju.edu.cn/git/nixpkgs.git?ref=nixos-25.11&shallow=1";
     nixpkgs-ollama.url = "git+https://mirrors.nju.edu.cn/git/nixpkgs.git?rev=15f4ee454b1dce334612fa6843b3e05cf546efab&shallow=1";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -16,6 +17,7 @@
   outputs =
     {
       nixpkgs,
+      nixpkgs-stable,
       nixpkgs-ollama,
       home-manager,
       nix-alien,
@@ -26,6 +28,10 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      stablePkgs = import nixpkgs-stable {
         inherit system;
         config.allowUnfree = true;
       };
@@ -60,6 +66,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "hm-bak";
+            home-manager.extraSpecialArgs = { inherit stablePkgs; };
             home-manager.sharedModules = [ catppuccin.homeModules.catppuccin ];
             home-manager.users.sernseek = import ./home.nix;
           }

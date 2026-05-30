@@ -41,6 +41,51 @@ let
       exec env QT_QPA_PLATFORMTHEME=xdgdesktopportal ${pkgs.telegram-desktop}/bin/telegram-desktop "$@"
     ''
   );
+
+  root-gui = pkgs.writeShellScriptBin "root-gui" ''
+    set -euo pipefail
+
+    if [ "$#" -eq 0 ]; then
+      echo "usage: root-gui <command> [args...]" >&2
+      exit 2
+    fi
+
+    if [ -z "''${DISPLAY:-}" ]; then
+      echo "root-gui needs an XWayland DISPLAY, but DISPLAY is empty." >&2
+      exit 1
+    fi
+
+    command_name="$1"
+    shift
+    case "$command_name" in
+      */*) command_path="$command_name" ;;
+      *)
+        command_path="$(command -v "$command_name" || true)"
+        if [ -z "$command_path" ]; then
+          echo "root-gui: command not found: $command_name" >&2
+          exit 127
+        fi
+        ;;
+    esac
+
+    ${pkgs.xhost}/bin/xhost +SI:localuser:root >/dev/null
+    cleanup() {
+      ${pkgs.xhost}/bin/xhost -SI:localuser:root >/dev/null 2>&1 || true
+    }
+    trap cleanup EXIT
+
+    exec sudo --preserve-env=DISPLAY env \
+      -u WAYLAND_DISPLAY \
+      -u LD_LIBRARY_PATH \
+      -u GIO_EXTRA_MODULES \
+      -u GIO_MODULE_DIR \
+      -u GI_TYPELIB_PATH \
+      -u GTK_PATH \
+      GDK_BACKEND=x11 \
+      QT_QPA_PLATFORM=xcb \
+      NO_AT_BRIDGE=1 \
+      "$command_path" "$@"
+  '';
 in
 {
   home.packages = [
@@ -50,5 +95,6 @@ in
     obs
     teamspeak
     telegram-desktop
+    root-gui
   ];
 }

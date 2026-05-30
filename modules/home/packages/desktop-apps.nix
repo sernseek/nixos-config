@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, stablePkgs, ... }:
 {
   home.packages = with pkgs; [
     # Browser
@@ -53,6 +53,6 @@
     remmina
     discord
     teamspeak6-client
-    # bottles
+    stablePkgs.bottles
   ];
 }
