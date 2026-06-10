@@ -14,9 +14,12 @@ let
         use std::time::{Duration, Instant};
 
         const DEVICE: &str = "/dev/input/by-id/usb-Logitech_USB_Receiver-event-kbd";
-        // Window within which a release followed by a press is treated as chatter.
-        // Bump this if your switches chatter for longer; lower for snappier fast-tap.
-        const DEBOUNCE: Duration = Duration::from_millis(30);
+        // Delay releases by this much; if a press for the same key arrives within
+        // the window, both are dropped (handles release-press chatter during a hold).
+        const RELEASE_DEBOUNCE: Duration = Duration::from_millis(30);
+        // Minimum gap between two accepted presses of the same key. Catches
+        // double-click chatter where a single tap is reported as two presses.
+        const PRESS_DEBOUNCE: Duration = Duration::from_millis(80);
         const KEY_MAX: usize = 0x2ff;
 
         const EV_SYN: i32 = 0x00;
@@ -147,6 +150,28 @@ let
             }
         }
 
+        fn open_source() -> io::Result<File> {
+            let mut waiting_logged = false;
+            loop {
+                match OpenOptions::new().read(true).open(DEVICE) {
+                    Ok(source) => {
+                        if waiting_logged {
+                            eprintln!("input device connected: {DEVICE}");
+                        }
+                        return Ok(source);
+                    }
+                    Err(err) if err.kind() == io::ErrorKind::NotFound => {
+                        if !waiting_logged {
+                            eprintln!("waiting for input device: {DEVICE}");
+                            waiting_logged = true;
+                        }
+                        thread::sleep(Duration::from_secs(2));
+                    }
+                    Err(err) => return Err(err),
+                }
+            }
+        }
+
         struct VirtualDevice {
             file: File,
         }
@@ -192,12 +217,13 @@ let
         }
 
         fn main() -> io::Result<()> {
-            let mut source = OpenOptions::new().read(true).open(DEVICE)?;
+            let mut source = open_source()?;
             ioctl_int(&source, EVIOCGRAB, 1)?;
             let source_fd = source.as_raw_fd();
             let mut output = VirtualDevice::create()?;
 
             let mut pressed = [false; KEY_MAX + 1];
+            let mut last_press = [const { None::<Instant> }; KEY_MAX + 1];
             let mut suppressed_releases = [0u32; KEY_MAX + 1];
             let mut pending_release: [Option<(Instant, InputEvent)>; KEY_MAX + 1] =
                 [const { None }; KEY_MAX + 1];
@@ -250,22 +276,29 @@ let
                 match event.value {
                     1 => {
                         if pending_release[code].take().is_some() {
-                            // Chatter: a release was waiting and the device re-fired a
-                            // press within DEBOUNCE — drop both, key stays held.
+                            // Chatter during hold: a release was waiting and the
+                            // device re-fired a press within RELEASE_DEBOUNCE.
+                            // Drop both, key stays held.
                             continue;
                         }
-                        if pressed[code] {
+                        let too_soon = last_press[code]
+                            .is_some_and(|t| t.elapsed() < PRESS_DEBOUNCE);
+                        if pressed[code] || too_soon {
+                            // Press-side chatter (double-click): a second press
+                            // arrived too close to the previous accepted press.
                             suppressed_releases[code] += 1;
                             continue;
                         }
                         pressed[code] = true;
+                        last_press[code] = Some(Instant::now());
                     }
                     0 if suppressed_releases[code] > 0 => {
                         suppressed_releases[code] -= 1;
                         continue;
                     }
                     0 => {
-                        pending_release[code] = Some((Instant::now() + DEBOUNCE, event));
+                        pending_release[code] =
+                            Some((Instant::now() + RELEASE_DEBOUNCE, event));
                         continue;
                     }
                     _ => {}

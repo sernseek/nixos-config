@@ -1,15 +1,46 @@
-{ pkgs, ... }:
+{
+  lib,
+  pkgs,
+  tinja-src,
+  ...
+}:
 let
   john = pkgs.john.overrideAttrs (old: {
     src = old.src.overrideAttrs {
       outputHash = "sha256-zO1/KUJe3LvYCGlwVpNg5uDwPRD0ql/7anErb7tywC0=";
     };
   });
+  seclistsPath = "${pkgs.seclists}/share/wordlists/seclists";
+  tinja = pkgs.buildGoModule {
+    pname = "tinja";
+    version = "unstable";
+
+    src = tinja-src;
+    vendorHash = "sha256-84fz393OiFhzVMJ963bTHoCY0R8AYTOfw85NFehEwnw=";
+
+    subPackages = [ "." ];
+
+    postInstall = ''
+      ln -s $out/bin/TInjA $out/bin/tinja
+    '';
+
+    meta = {
+      description = "CLI tool for testing web pages for template injection vulnerabilities";
+      homepage = "https://github.com/Hackmanit/TInjA";
+      license = lib.licenses.asl20;
+      mainProgram = "tinja";
+    };
+  };
 in
 {
   programs.wireshark.enable = true;
 
   users.users.sernseek.extraGroups = [ "wireshark" ];
+
+  systemd.tmpfiles.rules = [
+    "d /var/share 0755 root root - -"
+    "L+ /var/share/seclists - - - - ${seclistsPath}"
+  ];
 
   home-manager.users.sernseek.home.packages = with pkgs; [
     # Networking helpers used in pentest workflows
@@ -38,11 +69,15 @@ in
     ffuf
     gobuster
     feroxbuster
+    seclists
+    tinja
     wfuzz
     nikto
     sqlmap
     wpscan
     joomscan
+    s3scanner
+    shortscan
 
     # AD and Windows services
     bloodhound
@@ -70,6 +105,7 @@ in
     hcxtools
     hydra
     john
+    legba
 
     # Wi-Fi
     aircrack-ng

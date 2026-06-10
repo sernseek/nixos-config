@@ -21,7 +21,8 @@
 
     # File manager
     yazi
-    thunar
+    # Thunar is provided by programs.thunar so it keeps its plugin wrapper.
+    file-roller
     kdePackages.dolphin
     kdePackages.dolphin-plugins
 

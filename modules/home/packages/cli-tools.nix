@@ -10,6 +10,8 @@
     xz
     unzip
     p7zip
+    unar
+    unrar
 
     # utils
     ripgrep

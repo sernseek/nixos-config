@@ -42,6 +42,16 @@ let
     ''
   );
 
+  codex-b = pkgs.writeShellScriptBin "codex-b" ''
+    ${pkgs.coreutils}/bin/mkdir -p "$HOME/.codex-b"
+    exec env \
+      CODEX_HOME="$HOME/.codex-b" \
+      HTTP_PROXY=socks5h://127.0.0.1:7891 \
+      HTTPS_PROXY=socks5h://127.0.0.1:7891 \
+      ALL_PROXY=socks5h://127.0.0.1:7891 \
+      ${pkgs.codex}/bin/codex "$@"
+  '';
+
   root-gui = pkgs.writeShellScriptBin "root-gui" ''
     set -euo pipefail
 
@@ -95,6 +105,7 @@ in
     obs
     teamspeak
     telegram-desktop
+    codex-b
     root-gui
   ];
 }

@@ -12,6 +12,11 @@
 
     catppuccin.url = "github:catppuccin/nix";
     catppuccin.inputs.nixpkgs.follows = "nixpkgs";
+
+    tinja-src = {
+      url = "github:Hackmanit/TInjA";
+      flake = false;
+    };
   };
 
   outputs =
@@ -23,6 +28,7 @@
       nix-alien,
       disko,
       catppuccin,
+      tinja-src,
       ...
     }:
     let
@@ -45,6 +51,7 @@
 
       nixosConfigurations.nixos-main = nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit tinja-src; };
         modules = [
           disko.nixosModules.disko
           ./disko-config.nix
