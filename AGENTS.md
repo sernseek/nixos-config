@@ -78,7 +78,7 @@ Current NixOS categories:
 - [modules/nixos/system](modules/nixos/system/) - boot, locale, network,
   nix settings, users/shells, btrfs snapshots, base packages, numlock.
 - [modules/nixos/hardware](modules/nixos/hardware/) - nvidia, bluetooth,
-  controllers, Logitech G613 debounce service.
+  controllers.
 - [modules/nixos/desktop](modules/nixos/desktop/) - niri/greetd, desktop
   programs, services, fonts, input method.
 - [modules/nixos/services](modules/nixos/services/) - mihomo, Docker, VMware,
@@ -144,7 +144,13 @@ Current home-manager categories:
 - App launch fixes belong in
   [modules/home/packages/wrappers.nix](modules/home/packages/wrappers.nix) using
   `lib.hiPrio` shell wrappers. Existing wrappers cover `code`, `wechat`, `obs`,
-  `TeamSpeak`, `telegram-desktop`, and `appimage-run`.
+  `TeamSpeak`, `telegram-desktop`, `burpsuite`, and `appimage-run`.
+- Burp Suite local behavior is managed in
+  [modules/home/packages/wrappers.nix](modules/home/packages/wrappers.nix): the
+  wrapper conditionally loads the private, ignored
+  `/etc/nixos/assets/BurpAddon.jar`, applies Java UI scaling, and exposes a
+  stable Jython jar at `$HOME/.local/share/burp/jython.jar` for Python BApps
+  such as GAP.
 - The security tool bundle belongs in
   [modules/nixos/security-tools.nix](modules/nixos/security-tools.nix). It also
   enables Wireshark and adds `sernseek` to the `wireshark` group.

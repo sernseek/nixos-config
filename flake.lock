@@ -20,6 +20,24 @@
         "type": "github"
       }
     },
+    "dirsearch-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780897177,
+        "narHash": "sha256-rQd0vRuHoItdUZft/unAx/x9zkSd31sXu9jJkKWFeG0=",
+        "ref": "master",
+        "rev": "06c1be640c4479600064b22131a67f5f21fe2bca",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/maurosoria/dirsearch.git"
+      },
+      "original": {
+        "ref": "master",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/maurosoria/dirsearch.git"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -186,6 +204,7 @@
     "root": {
       "inputs": {
         "catppuccin": "catppuccin",
+        "dirsearch-src": "dirsearch-src",
         "disko": "disko",
         "home-manager": "home-manager",
         "nix-alien": "nix-alien",

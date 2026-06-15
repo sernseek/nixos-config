@@ -1,5 +1,6 @@
 {
   lib,
+  dirsearch-src,
   pkgs,
   tinja-src,
   ...
@@ -10,7 +11,83 @@ let
       outputHash = "sha256-zO1/KUJe3LvYCGlwVpNg5uDwPRD0ql/7anErb7tywC0=";
     };
   });
+  dirsearch = pkgs.python3Packages.buildPythonApplication rec {
+    pname = "dirsearch";
+    version = "0.5.0-unstable-2026-06-11";
+
+    src = dirsearch-src;
+
+    pyproject = true;
+    build-system = with pkgs.python3Packages; [
+      setuptools
+      wheel
+    ];
+
+    dependencies = with pkgs.python3Packages; [
+      beautifulsoup4
+      colorama
+      defusedcsv
+      defusedxml
+      httpx
+      httpx-ntlm
+      jinja2
+      pyopenssl
+      pysocks
+      requests
+      requests-ntlm
+      requests-toolbelt
+    ];
+
+    pythonRelaxDeps = [
+      "defusedxml"
+      "pyopenssl"
+    ];
+
+    pythonImportsCheck = [ "dirsearch" ];
+
+    meta = {
+      description = "Advanced web path scanner";
+      homepage = "https://github.com/maurosoria/dirsearch";
+      license = lib.licenses.gpl2Only;
+      mainProgram = "dirsearch";
+    };
+  };
   seclistsPath = "${pkgs.seclists}/share/wordlists/seclists";
+  sliver = pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "sliver";
+    version = "1.7.3";
+
+    client = pkgs.fetchurl {
+      url = "https://github.com/BishopFox/sliver/releases/download/v${version}/sliver-client_linux-amd64";
+      hash = "sha256-sOMooTHk1nnpsmhVLbmcotRgUbkgWmf5t/fBYomD2q4=";
+    };
+
+    server = pkgs.fetchurl {
+      url = "https://github.com/BishopFox/sliver/releases/download/v${version}/sliver-server_linux-amd64";
+      hash = "sha256-4yFuzRL25+l8tFiLtthccOyjvfrYsIGP/VPMsuNXzMg=";
+    };
+
+    dontUnpack = true;
+
+    installPhase = ''
+      runHook preInstall
+
+      install -Dm755 ${client} $out/bin/sliver-client
+      install -Dm755 ${server} $out/bin/sliver-server
+      ln -s sliver-client $out/bin/sliver
+
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "Adversary emulation framework";
+      homepage = "https://github.com/BishopFox/sliver";
+      license = lib.licenses.gpl3Only;
+      mainProgram = "sliver-client";
+      platforms = [ "x86_64-linux" ];
+      sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
+    };
+  };
   tinja = pkgs.buildGoModule {
     pname = "tinja";
     version = "unstable";
@@ -38,14 +115,18 @@ in
   users.users.sernseek.extraGroups = [ "wireshark" ];
 
   systemd.tmpfiles.rules = [
-    "d /var/share 0755 root root - -"
-    "L+ /var/share/seclists - - - - ${seclistsPath}"
+    "d /usr/share 0755 root root - -"
+    "L+ /usr/share/seclists - - - - ${seclistsPath}"
+    "r /var/share/seclists - - - - -"
   ];
 
   home-manager.users.sernseek.home.packages = with pkgs; [
     # Networking helpers used in pentest workflows
     tcpdump
     netcat-gnu
+    nfs-utils
+    mosquitto
+    rpcbind
     sshuttle
 
     # Recon
@@ -64,11 +145,13 @@ in
     waybackurls
     trufflehog
     gitleaks
+    fscan
 
     # Web
     ffuf
     gobuster
     feroxbuster
+    dirsearch
     seclists
     tinja
     wfuzz
@@ -128,6 +211,7 @@ in
     metasploit
     mitmproxy
     rlwrap
+    sliver
     zap
 
     # Reversing, forensics, and signatures

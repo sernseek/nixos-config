@@ -17,6 +17,11 @@
       url = "github:Hackmanit/TInjA";
       flake = false;
     };
+
+    dirsearch-src = {
+      url = "git+https://github.com/maurosoria/dirsearch.git?ref=master&shallow=1";
+      flake = false;
+    };
   };
 
   outputs =
@@ -29,6 +34,7 @@
       disko,
       catppuccin,
       tinja-src,
+      dirsearch-src,
       ...
     }:
     let
@@ -51,7 +57,7 @@
 
       nixosConfigurations.nixos-main = nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit tinja-src; };
+        specialArgs = { inherit dirsearch-src tinja-src; };
         modules = [
           disko.nixosModules.disko
           ./disko-config.nix

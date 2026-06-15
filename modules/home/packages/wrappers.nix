@@ -42,6 +42,34 @@ let
     ''
   );
 
+  burpsuite = lib.hiPrio (
+    pkgs.writeShellScriptBin "burpsuite" ''
+      set -euo pipefail
+
+      burp_addon_source="/etc/nixos/assets/BurpAddon.jar"
+      java_tool_options="--add-opens=java.desktop/javax.swing=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true"
+
+      if [ -n "''${BURP_UI_SCALE:-}" ]; then
+        java_tool_options="$java_tool_options -Dsun.java2d.uiScale=$BURP_UI_SCALE"
+      fi
+
+      if [ -z "''${BURP_DISABLE_ADDON:-}" ] && [ -r "$burp_addon_source" ]; then
+        burp_addon_runtime_dir="''${XDG_RUNTIME_DIR:-/tmp/burp-addons-$UID}/burp-addons"
+        burp_addon_runtime="$burp_addon_runtime_dir/BurpAddon.jar"
+        ${pkgs.coreutils}/bin/mkdir -p "$burp_addon_runtime_dir"
+        ${pkgs.coreutils}/bin/chmod 700 "$burp_addon_runtime_dir"
+        ${pkgs.coreutils}/bin/install -m0600 "$burp_addon_source" "$burp_addon_runtime"
+        java_tool_options="$java_tool_options -javaagent:$burp_addon_runtime"
+      fi
+
+      cd "''${HOME:-/}"
+      exec env \
+        _JAVA_AWT_WM_NONREPARENTING="''${BURP_AWT_WM_NONREPARENTING:-1}" \
+        JAVA_TOOL_OPTIONS="$java_tool_options''${JAVA_TOOL_OPTIONS:+ $JAVA_TOOL_OPTIONS}" \
+        ${pkgs.burpsuite}/bin/burpsuite "$@"
+    ''
+  );
+
   codex-b = pkgs.writeShellScriptBin "codex-b" ''
     ${pkgs.coreutils}/bin/mkdir -p "$HOME/.codex-b"
     exec env \
@@ -105,7 +133,10 @@ in
     obs
     teamspeak
     telegram-desktop
+    burpsuite
     codex-b
     root-gui
   ];
+
+  home.file.".local/share/burp/jython.jar".source = "${pkgs.jython}/jython.jar";
 }

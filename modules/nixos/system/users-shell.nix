@@ -21,4 +21,20 @@
 
   programs.fish.enable = true;
   programs.dconf.enable = true;
+
+  security.sudo.extraRules = [
+    {
+      users = [ "sernseek" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+        {
+          command = "/run/current-system/sw/bin/systemctl";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 }

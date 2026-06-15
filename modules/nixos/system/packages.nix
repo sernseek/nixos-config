@@ -5,6 +5,7 @@
     helix
     icu
     ollama-cuda
+    openssl
     vim
     wget
     zoxide
