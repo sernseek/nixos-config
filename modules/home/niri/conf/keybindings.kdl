@@ -4,14 +4,18 @@ binds {
 
     // ===== 应用启动 =====
     Mod+T { spawn "alacritty"; }
-    Mod+E { spawn "thunar"; }
+    Mod+E { spawn "nautilus" "--new-window"; }
     Mod+B { spawn "brave"; }
     Mod+A { spawn "noctalia-ipc" "launcher" "toggle"; }
     Mod+Shift+V { spawn "noctalia-ipc" "launcher" "clipboard"; }
-    // Wayland → XWayland (:0)：从 Wayland 复制后按一下，粘进 VMware guest
-    Mod+Alt+V { spawn-sh "wl-paste -n | env DISPLAY=:0 xsel -ib"; }
+    // Wayland → XWayland (:0)：从 Wayland 复制后按一下，粘进 VMware guest。
+    // 图片走 xclip(image/png)，其余按文本走 xsel。
+    Mod+Alt+V { spawn-sh "if wl-paste --list-types 2>/dev/null | grep -q '^image/png$'; then wl-paste --type image/png -n | env DISPLAY=:0 xclip -selection clipboard -t image/png -i; else wl-paste --type text -n | env DISPLAY=:0 xsel -ib; fi"; }
+    // 图片提纯：丢掉浏览器“复制图片”附带的 text/html 外链等，只保留 image/png，
+    // 这样粘进网页应用/编辑器时拿到的是原图而不是降级成的 image.png 文件引用。
+    Mod+Alt+I { spawn-sh "wl-paste --list-types 2>/dev/null | grep -q '^image/png$' && wl-paste --type image/png -n | wl-copy --type image/png"; }
     // XWayland → Wayland：从 VMware guest/X11 app 复制后按一下，粘进 Wayland app
-    Mod+Alt+C { spawn-sh "tmp=$(mktemp) || exit 1; trap 'rm -f \"$tmp\"' EXIT; max=524288; limit=$((max + 1)); for i in 1 2 3 4 5 6 7 8 9 10; do if timeout 1s sh -c 'env DISPLAY=:0 xsel -ob | head -c \"$1\" > \"$2\"' sh \"$limit\" \"$tmp\" 2>/dev/null && [ -s \"$tmp\" ]; then bytes=$(wc -c <\"$tmp\" || echo 0); [ \"$bytes\" -le \"$max\" ] || exit 0; wl-copy <\"$tmp\"; exit 0; fi; sleep 0.1; done; exit 1"; }
+    Mod+Alt+C { spawn-sh "tmp=$(mktemp) || exit 1; trap 'rm -f \"$tmp\"' EXIT; if env DISPLAY=:0 xclip -selection clipboard -o -t TARGETS 2>/dev/null | grep -q '^image/png$'; then if timeout 2s sh -c 'env DISPLAY=:0 xclip -selection clipboard -o -t image/png > \"$1\"' sh \"$tmp\" 2>/dev/null && [ -s \"$tmp\" ]; then wl-copy --type image/png <\"$tmp\"; exit 0; fi; exit 1; fi; max=524288; limit=$((max + 1)); for i in 1 2 3 4 5 6 7 8 9 10; do if timeout 1s sh -c 'env DISPLAY=:0 xsel -ob | head -c \"$1\" > \"$2\"' sh \"$limit\" \"$tmp\" 2>/dev/null && [ -s \"$tmp\" ]; then bytes=$(wc -c <\"$tmp\" || echo 0); [ \"$bytes\" -le \"$max\" ] || exit 0; wl-copy <\"$tmp\"; exit 0; fi; sleep 0.1; done; exit 1"; }
     Mod+C { spawn "noctalia-ipc" "launcher" "calculator"; }
     Mod+S { spawn "noctalia-ipc" "controlCenter" "toggle"; }
     Mod+Shift+E { spawn "noctalia-ipc" "sessionMenu" "toggle"; }

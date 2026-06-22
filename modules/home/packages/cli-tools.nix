@@ -28,6 +28,7 @@
     xterm
     wl-clipboard
     xsel
+    xclip # binary-safe X11 selection I/O (images) for the clipboard bridge
     ripgrep-all
 
     # networking tools
@@ -40,6 +41,9 @@
     nmap
     ipcalc
     proxychains-ng
+
+    # database clients
+    mariadb.client
 
     # misc
     cowsay
