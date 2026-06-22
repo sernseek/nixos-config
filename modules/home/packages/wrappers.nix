@@ -6,6 +6,15 @@ let
     ''
   );
 
+  # Force Brave onto native Wayland. The nixpkgs wrapper only adds the flaky
+  # --ozone-platform-hint=auto (from NIXOS_OZONE_WL); explicit
+  # --ozone-platform=wayland overrides it and stops Brave's Wayland clipboard
+  # paste from intermittently dying (Ctrl+V silently failing). This is a
+  # package override rather than a hiPrio shell wrapper on purpose: a shell
+  # wrapper only patches the PATH `brave` command, while the .desktop launcher
+  # execs the package's own bin/brave -- the override patches both.
+  brave = pkgs.brave.override { commandLineArgs = "--ozone-platform=wayland"; };
+
   vscode = lib.hiPrio (
     pkgs.writeShellScriptBin "code" ''
       exec ${pkgs.vscode}/bin/code --password-store=gnome-libsecret --enable-features=UseOzonePlatform --ozone-platform=wayland --disable-gpu "$@"
@@ -128,6 +137,7 @@ in
 {
   home.packages = [
     appimage-run
+    brave
     vscode
     wechat
     obs
