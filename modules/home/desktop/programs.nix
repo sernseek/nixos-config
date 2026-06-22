@@ -15,6 +15,8 @@
         tag.gpgsign = true;
         http.proxy = "socks5h://127.0.0.1:7890";
         https.proxy = "socks5h://127.0.0.1:7890";
+        credential.helper = "${pkgs.git-credential-manager}/bin/git-credential-manager";
+        credential.credentialStore = "secretservice";
         credential."https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
         credential."https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
       };
@@ -65,6 +67,9 @@
         show_startup_tips = false;
         simplified_ui = true;
         pane_frames = false;
+        session_serialization = true;
+        serialize_pane_viewport = true;
+        serialization_interval = 60;
       };
     };
 
@@ -82,6 +87,7 @@
         ll = "ls -alF --color=auto";
         la = "ls -A --color=auto";
         l = "ls -CF --color=auto";
+        pc4 = "proxychains4 -q";
       };
     };
 
