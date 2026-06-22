@@ -8,3 +8,13 @@ output "eDP-1" {
     transform "normal"
     position x=0 y=0
 }
+
+// AOC 27B30H external monitor. 60Hz preferred mode feels choppy next to the
+// 165Hz internal panel, so pin its highest mode (100Hz). Logical width of the
+// internal panel is 2560/1.5 = 1706, so place this immediately to its right.
+output "HDMI-A-1" {
+    mode "1920x1080@100.000"
+    scale 1.0
+    transform "normal"
+    position x=1706 y=0
+}
