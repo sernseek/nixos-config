@@ -6,6 +6,7 @@
     icu
     ollama-cuda
     openssl
+    upx
     vim
     wget
     zoxide

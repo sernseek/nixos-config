@@ -30,7 +30,7 @@
 
   services.snapper = {
     snapshotRootOnBoot = true;
-    snapshotInterval = "00/6:00:00";
+    snapshotInterval = "03:00:00";
     cleanupInterval = "1d";
     persistentTimer = true;
 
@@ -43,8 +43,8 @@
         TIMELINE_CLEANUP = true;
         TIMELINE_LIMIT_HOURLY = 8;
         TIMELINE_LIMIT_DAILY = 7;
-        TIMELINE_LIMIT_WEEKLY = 4;
-        TIMELINE_LIMIT_MONTHLY = 3;
+        TIMELINE_LIMIT_WEEKLY = 2;
+        TIMELINE_LIMIT_MONTHLY = 1;
         TIMELINE_LIMIT_YEARLY = 0;
 
         NUMBER_CLEANUP = true;
@@ -61,8 +61,8 @@
         TIMELINE_CLEANUP = true;
         TIMELINE_LIMIT_HOURLY = 8;
         TIMELINE_LIMIT_DAILY = 7;
-        TIMELINE_LIMIT_WEEKLY = 4;
-        TIMELINE_LIMIT_MONTHLY = 3;
+        TIMELINE_LIMIT_WEEKLY = 2;
+        TIMELINE_LIMIT_MONTHLY = 1;
         TIMELINE_LIMIT_YEARLY = 0;
 
         NUMBER_CLEANUP = true;

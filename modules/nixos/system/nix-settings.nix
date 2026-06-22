@@ -11,7 +11,6 @@
     substituters = [
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-      "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
     ];
@@ -24,8 +23,12 @@
     fallback = true;
     # Drop dead substituters fast (e.g. cachix SSL reset) instead of long retries.
     connect-timeout = 5;
-    # Abandon a stalled substitute download after 30s of no progress.
-    stalled-download-timeout = 30;
+    # Abandon a stalled substitute download after 10s of no progress, so a
+    # flaky mirror (e.g. sjtu timing out) does not stall the whole rebuild.
+    stalled-download-timeout = 10;
+    # Do not retry the same dead URL 5x; fail fast and move to the next
+    # substituter (or build from source via `fallback`).
+    download-attempts = 1;
     # More parallel connections to speed up substitution from the mirrors.
     http-connections = 50;
   };
