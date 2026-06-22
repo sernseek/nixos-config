@@ -53,6 +53,19 @@ let
     };
   };
   seclistsPath = "${pkgs.seclists}/share/wordlists/seclists";
+  rubyCsvLib = "${pkgs.rubyPackages.csv}/${pkgs.ruby.gemPath}/gems/${pkgs.rubyPackages.csv.gemName}-${pkgs.rubyPackages.csv.version}/lib";
+  evilWinrm =
+    pkgs.runCommand "${pkgs.evil-winrm.name}-with-csv"
+      {
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        meta = pkgs.evil-winrm.meta;
+      }
+      ''
+        mkdir -p $out/bin
+        makeWrapper ${lib.getExe pkgs.evil-winrm} $out/bin/evil-winrm \
+          --prefix RUBYLIB : "${rubyCsvLib}" \
+          --prefix RUBYOPT " " "-W0"
+      '';
   sliver = pkgs.stdenvNoCC.mkDerivation rec {
     pname = "sliver";
     version = "1.7.3";
@@ -88,6 +101,26 @@ let
       sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
     };
   };
+  iox = pkgs.buildGoModule rec {
+    pname = "iox";
+    version = "0.4";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "EddieIvan01";
+      repo = "iox";
+      rev = "v${version}";
+      hash = "sha256-MozfApT85qCgxE6EuSq4mX51tZZCTjAywyTDctpProU=";
+    };
+
+    vendorHash = "sha256-EKDV3zNMS0EfR7GkjVKiupjTuGeh5B556uF/fJlSZ8g=";
+
+    meta = {
+      description = "Tool for port forwarding and intranet proxying";
+      homepage = "https://github.com/EddieIvan01/iox";
+      license = lib.licenses.mit;
+      mainProgram = "iox";
+    };
+  };
   tinja = pkgs.buildGoModule {
     pname = "tinja";
     version = "unstable";
@@ -118,7 +151,20 @@ in
     "d /usr/share 0755 root root - -"
     "L+ /usr/share/seclists - - - - ${seclistsPath}"
     "r /var/share/seclists - - - - -"
+    "d /var/cache/samba 0755 root root - -"
+    "d /var/lib/samba 0755 root root - -"
+    "d /var/lock/samba 0755 root root - -"
+    "d /run/samba 0755 root root - -"
   ];
+
+  environment.etc."samba/smb.conf".text = ''
+    [global]
+      workgroup = WORKGROUP
+      name resolve order = lmhosts host wins bcast
+      client min protocol = NT1
+      client ipc min protocol = NT1
+      client max protocol = SMB3
+  '';
 
   home-manager.users.sernseek.home.packages = with pkgs; [
     # Networking helpers used in pentest workflows
@@ -168,7 +214,8 @@ in
     certipy
     enum4linux
     enum4linux-ng
-    evil-winrm
+    evilWinrm
+    freerdp
     kerbrute
     krb5
     netexec
@@ -207,6 +254,7 @@ in
     # Exploitation and pivoting
     burpsuite
     chisel
+    iox
     ligolo-ng
     metasploit
     mitmproxy
@@ -221,6 +269,7 @@ in
     exploitdb
     foremost
     ghidra
+    jadx
     radare2
     rizin
     sleuthkit
