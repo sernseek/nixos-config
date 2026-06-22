@@ -28,6 +28,9 @@
       allowedUDPPorts = [
         53317 # LocalSend multicast discovery
       ];
+      # notify-bridge receiver — open only on the VMware NAT interface so the
+      # Windows guest can reach it, never on tether/tailscale.
+      interfaces."vmnet8".allowedTCPPorts = [ 8787 ];
     };
   };
 }

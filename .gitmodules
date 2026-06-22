@@ -1,3 +1,6 @@
 [submodule "nixos-secrets"]
 	path = nixos-secrets
 	url = https://github.com/sernseek/nixos-secrets.git
+[submodule "notify-bridge"]
+	path = notify-bridge
+	url = https://github.com/sernseek/notify-bridge.git
