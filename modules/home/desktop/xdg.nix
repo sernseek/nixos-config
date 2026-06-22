@@ -1,7 +1,11 @@
 { lib, ... }:
 let
   browser = "brave-browser.desktop";
+  fileManager = [ "org.gnome.Nautilus.desktop" ];
+  imageViewer = [ "org.gnome.Loupe.desktop" ];
   onlyOffice = "onlyoffice-desktopeditors.desktop";
+  documentViewer = [ "org.gnome.Papers.desktop" ];
+  textEditor = [ "org.gnome.TextEditor.desktop" ];
 
   writer = [ "writer.desktop" ];
   calc = [ "calc.desktop" ];
@@ -24,6 +28,68 @@ let
     "x-scheme-handler/https" = [ browser ];
     "x-scheme-handler/webcal" = [ browser ];
     "x-scheme-handler/unknown" = [ browser ];
+  };
+
+  fileManagerMimes = {
+    "inode/directory" = fileManager;
+  };
+
+  imageViewerMimes = {
+    "image/apng" = imageViewer;
+    "image/avif" = imageViewer;
+    "image/bmp" = imageViewer;
+    "image/gif" = imageViewer;
+    "image/heic" = imageViewer;
+    "image/jpeg" = imageViewer;
+    "image/jp2" = imageViewer;
+    "image/jxl" = imageViewer;
+    "image/png" = imageViewer;
+    "image/qoi" = imageViewer;
+    "image/svg+xml" = imageViewer;
+    "image/svg+xml-compressed" = imageViewer;
+    "image/tiff" = imageViewer;
+    "image/vnd.microsoft.icon" = imageViewer;
+    "image/webp" = imageViewer;
+    "image/x-dds" = imageViewer;
+    "image/x-exr" = imageViewer;
+    "image/x-portable-anymap" = imageViewer;
+    "image/x-portable-bitmap" = imageViewer;
+    "image/x-portable-graymap" = imageViewer;
+    "image/x-portable-pixmap" = imageViewer;
+    "image/x-qoi" = imageViewer;
+    "image/x-tga" = imageViewer;
+    "image/x-win-bitmap" = imageViewer;
+    "image/x-xbitmap" = imageViewer;
+    "image/x-xpixmap" = imageViewer;
+  };
+
+  documentViewerMimes = {
+    "application/illustrator" = documentViewer;
+    "application/pdf" = documentViewer;
+    "application/vnd.comicbook+zip" = documentViewer;
+    "application/vnd.comicbook-rar" = documentViewer;
+    "application/x-bzpdf" = documentViewer;
+    "application/x-cb7" = documentViewer;
+    "application/x-cbr" = documentViewer;
+    "application/x-cbt" = documentViewer;
+    "application/x-cbz" = documentViewer;
+    "application/x-ext-cb7" = documentViewer;
+    "application/x-ext-cbr" = documentViewer;
+    "application/x-ext-cbt" = documentViewer;
+    "application/x-ext-cbz" = documentViewer;
+    "application/x-ext-djv" = documentViewer;
+    "application/x-ext-djvu" = documentViewer;
+    "application/x-ext-pdf" = documentViewer;
+    "application/x-gzpdf" = documentViewer;
+    "application/x-xzpdf" = documentViewer;
+    "image/vnd.djvu" = documentViewer;
+    "image/vnd.djvu+multipage" = documentViewer;
+  };
+
+  textEditorMimes = {
+    "application/x-zerosize" = textEditor;
+    "text/markdown" = textEditor;
+    "text/plain" = textEditor;
   };
 
   libreOfficeMimes = {
@@ -106,18 +172,20 @@ let
       "x-scheme-handler/oo-office"
     ]
   );
+
+  gnomeMimes = fileManagerMimes // imageViewerMimes // documentViewerMimes // textEditorMimes;
 in
 {
   xdg.mimeApps = {
     enable = true;
-    defaultApplications =
-      browserMimes
-      // libreOfficeMimes
-      // {
-        "inode/directory" = [ "thunar.desktop" ];
-      };
-    associations.added = browserMimes // libreOfficeMimes;
-    associations.removed = lib.genAttrs onlyOfficeMimes (_: [ onlyOffice ]);
+    defaultApplications = browserMimes // libreOfficeMimes // gnomeMimes;
+    associations.added = browserMimes // libreOfficeMimes // gnomeMimes;
+    associations.removed = lib.genAttrs onlyOfficeMimes (_: [ onlyOffice ]) // {
+      "inode/directory" = [
+        "thunar.desktop"
+        "org.kde.dolphin.desktop"
+      ];
+    };
   };
 
   xdg.configFile."fcitx5/rime/default.custom.yaml".text = ''

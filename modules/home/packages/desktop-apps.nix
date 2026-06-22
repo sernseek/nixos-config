@@ -2,7 +2,7 @@
 {
   home.packages = with pkgs; [
     # Browser
-    brave
+    # brave is provided (with a native-Wayland override) from wrappers.nix
     firefox
     chromium
     google-chrome
@@ -19,12 +19,18 @@
     # Desktop components
     noctalia-shell
 
-    # File manager
+    # File manager / GNOME utilities
     yazi
-    # Thunar is provided by programs.thunar so it keeps its plugin wrapper.
+    nautilus
     file-roller
-    kdePackages.dolphin
-    kdePackages.dolphin-plugins
+    loupe
+    papers
+    gnome-text-editor
+    gnome-system-monitor
+    gnome-disk-utility
+    baobab
+    simple-scan
+    sushi
 
     # Media / viewer / recorder
     mpv
@@ -50,7 +56,6 @@
     tor-browser
     localsend
     appimage-run
-    nautilus
     remmina
     discord
     teamspeak6-client

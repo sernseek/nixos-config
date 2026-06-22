@@ -54,6 +54,7 @@ in
       # typing the password. Keep fcitx for regular apps, but make the shell
       # itself use Qt's simple built-in input path.
       Environment = [
+        "QS_ICON_THEME=Adwaita"
         "QT_IM_MODULE=compose"
         "GTK_IM_MODULE=gtk-im-context-simple"
         "XMODIFIERS=@im=none"
@@ -83,7 +84,7 @@ in
 
   systemd.user.services.niri-flake-polkit = {
     Unit = {
-      Description = "PolicyKit Authentication Agent provided by niri-flake";
+      Description = "GNOME PolicyKit Authentication Agent for niri";
       After = [
         "graphical-session.target"
       ];
@@ -92,7 +93,7 @@ in
     Install.WantedBy = [ "niri.service" ];
     Service = {
       Type = "simple";
-      ExecStart = "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
       Restart = "on-failure";
       RestartSec = 1;
       TimeoutStopSec = 10;
