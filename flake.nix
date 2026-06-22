@@ -23,10 +23,9 @@
       flake = false;
     };
 
-    # Source for the notify-bridge host receiver. Mirrors the submodule at
-    # ./notify-bridge; flake builds from this input (submodule contents are not
-    # visible to the flake). For local iteration:
-    #   --override-input notify-bridge-src path:./notify-bridge
+    # Source for the notify-bridge host receiver, built directly from its repo.
+    # For local iteration against a working copy:
+    #   --override-input notify-bridge-src path:/path/to/notify-bridge
     notify-bridge-src = {
       url = "github:sernseek/notify-bridge";
       flake = false;
