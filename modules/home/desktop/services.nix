@@ -19,12 +19,24 @@ let
 
   text_max = "524288"; # 512 KiB
 
+  # Shared loop-prevention state. Both directions record the sha256 of the value
+  # they propagate *before* touching the other clipboard. A value that
+  # originated on one side is then recognized on the other and NOT echoed back.
+  #
+  # This replaces the old live-`cmp` guard, which was racy and fooled by native
+  # Wayland apps (Brave/Obsidian) offering text/html: the bridge would steal the
+  # Wayland selection from a still-open source mid-paste, and Chromium's Wayland
+  # clipboard chokes on that ownership churn -- so Wayland->Wayland paste (e.g.
+  # Obsidian -> Brave) silently broke even though neither app needs the bridge.
+  state_file = "clip-bridge-last-sha";
+
   # One Wayland->XWayland(:0) text pass, called by `wl-paste --watch`.
   wl2xForward = pkgs.writeShellScript "wl2x-forward" ''
     set -u
     export PATH=${pkgs.wl-clipboard}/bin:${pkgs.xsel}/bin:${pkgs.coreutils}/bin:$PATH
     text_max="''${VMWARE_CLIPBOARD_MAX_BYTES:-${text_max}}"
     limit=$((text_max + 1))
+    state="''${XDG_RUNTIME_DIR:-/tmp}/${state_file}"
 
     # Skip non-text selections (images, files) entirely; those are handled by
     # the manual keybindings to avoid clobbering.
@@ -41,12 +53,32 @@ let
     }
     trap 'rm -f "$new" "$cur"' EXIT
 
-    wl-paste --type text -n > "$new" 2>/dev/null || exit 0
+    # Read canonical utf-8 plain text so the bytes are stable across the X11
+    # round-trip (the bare `--type text` can grab text/html from Chromium apps,
+    # which then never matches the X11 side and triggers a bogus re-copy).
+    if wl-paste --type 'text/plain;charset=utf-8' -n > "$new" 2>/dev/null && [ -s "$new" ]; then
+      :
+    elif wl-paste --type text/plain -n > "$new" 2>/dev/null && [ -s "$new" ]; then
+      :
+    else
+      wl-paste --type text -n > "$new" 2>/dev/null || exit 0
+    fi
     [ -s "$new" ] || exit 0
     [ "$(wc -c < "$new")" -le "$text_max" ] || exit 0
 
+    # Loop guard: if this is the value the bridge last propagated (it just
+    # arrived from the X11 side), don't echo it back -- leave the Wayland source
+    # owning its own selection so native Wayland paste keeps working.
+    h=$(sha256sum < "$new" | cut -d' ' -f1)
+    [ "$h" = "$(cat "$state" 2>/dev/null)" ] && exit 0
+
+    # Cheap extra guard against an already-identical X11 selection.
     timeout 1s sh -c 'env DISPLAY=:0 xsel -ob | head -c "$1" > "$2"' sh "$limit" "$cur" 2>/dev/null || : > "$cur"
     cmp -s "$new" "$cur" && exit 0
+
+    # Record the hash BEFORE the xsel write, because that write is what wakes the
+    # x2wl direction via clipnotify; the state must be visible by then.
+    printf '%s' "$h" > "$state.tmp" 2>/dev/null && mv -f "$state.tmp" "$state" 2>/dev/null || :
     env DISPLAY=:0 xsel -ib < "$new"
   '';
 
@@ -58,6 +90,7 @@ let
 
     text_max="''${VMWARE_CLIPBOARD_MAX_BYTES:-${text_max}}"
     limit=$((text_max + 1))
+    state="''${XDG_RUNTIME_DIR:-/tmp}/${state_file}"
 
     sync_clipboard() {
       for _ in 1 2 3 4 5 6 7 8 9 10; do
@@ -74,8 +107,23 @@ let
             rm -f "$x" "$wl"
             return 0
           fi
+          # Loop guard: if this value is the one the bridge last propagated (it
+          # just arrived from the Wayland side via wl2x), don't wl-copy it back.
+          # That re-copy is what stole the selection from native Wayland sources
+          # and broke Chromium paste.
+          h=$(sha256sum < "$x" | cut -d' ' -f1)
+          if [ "$h" = "$(cat "$state" 2>/dev/null)" ]; then
+            rm -f "$x" "$wl"
+            return 0
+          fi
           wl-paste --type text -n > "$wl" 2>/dev/null || : > "$wl"
-          cmp -s "$x" "$wl" || wl-copy < "$x"
+          if cmp -s "$x" "$wl"; then
+            rm -f "$x" "$wl"
+            return 0
+          fi
+          # Record BEFORE wl-copy: that copy wakes wl2x via wl-paste --watch.
+          printf '%s' "$h" > "$state.tmp" 2>/dev/null && mv -f "$state.tmp" "$state" 2>/dev/null || :
+          wl-copy < "$x"
           rm -f "$x" "$wl"
           return 0
         fi
