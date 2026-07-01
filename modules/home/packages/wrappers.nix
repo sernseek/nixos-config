@@ -52,6 +52,21 @@ let
     ''
   );
 
+  nix-ld-run = pkgs.writeShellScriptBin "nix-ld-run" ''
+    set -euo pipefail
+
+    if [ "$#" -eq 0 ]; then
+      echo "usage: nix-ld-run <command> [args...]" >&2
+      exit 2
+    fi
+
+    nix_ld_lib="/run/current-system/sw/share/nix-ld/lib"
+    exec env \
+      LD_LIBRARY_PATH="$nix_ld_lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+      NIX_LD_LIBRARY_PATH="$nix_ld_lib''${NIX_LD_LIBRARY_PATH:+:$NIX_LD_LIBRARY_PATH}" \
+      "$@"
+  '';
+
   burpsuite = lib.hiPrio (
     pkgs.writeShellScriptBin "burpsuite" ''
       set -euo pipefail
@@ -144,6 +159,7 @@ in
     obs
     teamspeak
     telegram-desktop
+    nix-ld-run
     burpsuite
     codex-b
     root-gui
