@@ -41,9 +41,13 @@
     nmap
     ipcalc
     proxychains-ng
+    openvpn
+    openvpn3
 
     # database clients
     mariadb.client
+    redis
+    sqlite
 
     # misc
     cowsay

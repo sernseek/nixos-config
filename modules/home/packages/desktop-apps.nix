@@ -10,11 +10,13 @@
     # Communication / notes
     telegram-desktop
     obsidian
+    thunderbird
 
     # Terminal emulator
     foot
     alacritty
     ghostty
+    kitty
 
     # Desktop components
     noctalia-shell
@@ -59,6 +61,8 @@
     remmina
     discord
     teamspeak6-client
-    stablePkgs.bottles
+    (stablePkgs.bottles.override {
+      removeWarningPopup = true;
+    })
   ];
 }
