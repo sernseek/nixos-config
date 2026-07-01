@@ -44,7 +44,11 @@ in
     Unit = {
       Description = "Noctalia quickshell-based desktop shell";
       PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      Wants = [ "fcitx5.service" ];
+      After = [
+        "graphical-session.target"
+        "fcitx5.service"
+      ];
     };
     Install.WantedBy = [ "niri.service" ];
     Service = {
