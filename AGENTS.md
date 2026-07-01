@@ -7,8 +7,10 @@ This is the primary project guide for coding agents working in this repository.
 
 Personal NixOS configuration for host `nixos-main` and user `sernseek`.
 The flake builds one `nixosConfigurations.nixos-main` system from NixOS,
-home-manager, disko, Catppuccin, local modules, and a small pinned Ollama
-package set.
+home-manager, disko, Catppuccin, local modules, a small pinned Ollama
+package set, and several security tools built from `flake = false` source
+inputs. A second `nixpkgs-stable` (nixos-25.11) channel is imported as
+`stablePkgs` for packages that are broken on unstable (currently `bottles`).
 
 ## Agent workflow
 
@@ -43,6 +45,11 @@ nix flake update
 # Update only the pinned Ollama nixpkgs input after changing its rev.
 nix flake lock --update-input nixpkgs-ollama
 
+# Iterate on the notify-bridge host receiver against a local working copy
+# instead of the pinned GitHub source.
+sudo nixos-rebuild switch --flake /etc/nixos#nixos-main \
+  --override-input notify-bridge-src path:/path/to/notify-bridge
+
 # Format Nix files; formatter is pkgs.nixfmt from flake.nix.
 nix fmt
 ```
@@ -55,8 +62,14 @@ extension configured in [flake.nix](flake.nix).
 ## Entry points
 
 - [flake.nix](flake.nix) defines the single `nixosConfigurations.nixos-main`,
-  imports nixpkgs from the NJU mirror, pins `nixpkgs-ollama`, enables
-  `nix-alien`, and wires home-manager with `useGlobalPkgs = true`.
+  imports nixpkgs from the NJU mirror, adds a `nixpkgs-stable` (nixos-25.11)
+  channel exposed to home-manager as `stablePkgs`, pins `nixpkgs-ollama`,
+  enables `nix-alien`, and wires home-manager with `useGlobalPkgs = true`.
+  It also carries `flake = false` source inputs consumed by other modules:
+  `tinja-src` and `dirsearch-src` (security tools built from source) and
+  `notify-bridge-src` (the Windows-guest notification receiver). `stablePkgs`
+  and `notify-bridge-src` are threaded into home-manager via
+  `home-manager.extraSpecialArgs`.
 - [configuration.nix](configuration.nix) imports [modules/nixos](modules/nixos/)
   and sets `system.stateVersion = "26.05"`.
 - [home.nix](home.nix) imports [modules/home](modules/home/) and sets
@@ -90,8 +103,9 @@ Current home-manager categories:
 
 - [modules/home/packages](modules/home/packages/) - `dev.nix`,
   `desktop-apps.nix`, `cli-tools.nix`, and runtime `wrappers.nix`.
-- [modules/home/desktop](modules/home/desktop/) - fcitx5, programs, services,
-  session variables, theme, xdg.
+- [modules/home/desktop](modules/home/desktop/) - fcitx5, notify-bridge,
+  programs, services (including the X11<->Wayland clipboard bridge), session
+  variables, theme, xdg.
 - [modules/home/niri](modules/home/niri/) - niri KDL links, wayland-session,
   Noctalia/fcitx/polkit user services.
 
@@ -107,7 +121,9 @@ Current home-manager categories:
 - The KDL files in [modules/home/niri/conf](modules/home/niri/conf/) are
   live-linked. Edits to `config.kdl`, `keybindings.kdl`,
   `noctalia-shell.kdl`, and `spawn-at-startup.kdl` take effect without a
-  rebuild.
+  rebuild. `modules/home/niri/niri-hardware.kdl` holds machine-specific
+  monitor/output config (e.g. the external `HDMI-A-1` pinned to
+  1920x1080@100Hz).
 - `noctalia-shell`, `fcitx5`, and the polkit agent run as user services wanted
   by `niri.service`, so debug them with `systemctl --user` / `journalctl --user`.
 
@@ -131,20 +147,36 @@ Current home-manager categories:
   [modules/nixos/services/vmware.nix](modules/nixos/services/vmware.nix).
 - Ollama uses the pinned `ollama-cuda` package from `nixpkgs-ollama`; Open WebUI
   listens on `127.0.0.1:52001`.
+- [modules/home/desktop/notify-bridge.nix](modules/home/desktop/notify-bridge.nix)
+  builds the Rust receiver from `notify-bridge-src` and runs it as a user
+  service bound to `0.0.0.0:8787`, forwarding Windows VMware-guest notifications
+  to the host desktop. The shared secret is read at runtime from
+  `nixos-secrets/notify-bridge.env` (`NOTIFY_BRIDGE_TOKEN=`), same pattern as
+  mihomo; the guest agent's `config.json` must carry the same token.
+- [modules/home/desktop/services.nix](modules/home/desktop/services.nix) runs a
+  text-only X11<->Wayland clipboard bridge with a shared-hash loop guard so it
+  does not steal native Wayland selections (that guard is why paste into Brave
+  from Wayland apps works); images/files are handled by Mod+Alt keybindings, not
+  the bridge.
 
 ## Packages and wrappers
 
 - General desktop apps live in
   [modules/home/packages/desktop-apps.nix](modules/home/packages/desktop-apps.nix).
-  `bottles` is currently commented out; previous build failures came through an
-  `openldap` test in the Bottles FHS dependency chain.
+  `bottles` is now installed from `stablePkgs` (nixos-25.11) with
+  `removeWarningPopup = true`, which sidesteps the `openldap` test in the
+  unstable Bottles FHS dependency chain; keep it on the stable channel unless
+  that chain is fixed on unstable.
 - Development tools live in
   [modules/home/packages/dev.nix](modules/home/packages/dev.nix); CLI tools live
   in [modules/home/packages/cli-tools.nix](modules/home/packages/cli-tools.nix).
 - App launch fixes belong in
-  [modules/home/packages/wrappers.nix](modules/home/packages/wrappers.nix) using
-  `lib.hiPrio` shell wrappers. Existing wrappers cover `code`, `wechat`, `obs`,
-  `TeamSpeak`, `telegram-desktop`, `burpsuite`, and `appimage-run`.
+  [modules/home/packages/wrappers.nix](modules/home/packages/wrappers.nix), mostly
+  as `lib.hiPrio` shell wrappers. Existing wrappers cover `code`, `wechat`,
+  `obs`, `TeamSpeak`, `telegram-desktop`, `burpsuite`, and `appimage-run`, plus
+  `codex-b`, `root-gui`, and `nix-ld-run` helpers. `brave` is handled as a
+  package override (not a hiPrio wrapper) so the `.desktop` launcher also gets
+  the native-Wayland flag.
 - Burp Suite local behavior is managed in
   [modules/home/packages/wrappers.nix](modules/home/packages/wrappers.nix): the
   wrapper conditionally loads the private, ignored
@@ -153,7 +185,9 @@ Current home-manager categories:
   such as GAP.
 - The security tool bundle belongs in
   [modules/nixos/security-tools.nix](modules/nixos/security-tools.nix). It also
-  enables Wireshark and adds `sernseek` to the `wireshark` group.
+  enables Wireshark and adds `sernseek` to the `wireshark` group. Several tools
+  are built from source inside this module: `dirsearch` (from `dirsearch-src`),
+  `tinja` (from `tinja-src`), plus `sliver` and `iox` (`buildGoModule`).
 
 ## Rebuild triage
 
@@ -162,7 +196,9 @@ Current home-manager categories:
 - For Bottles-related failures, verify the dependency path with `nix why-depends`
   before changing package policy. The relevant chain has been
   `bottles -> bottles-bwrap -> bottles-fhsenv-rootfs -> openldap`, including the
-  32-bit `pkgsi686Linux.openldap` path.
+  32-bit `pkgsi686Linux.openldap` path. The current workaround is pulling
+  `bottles` from `stablePkgs` (nixos-25.11) rather than unstable; if it breaks,
+  check the stable channel first, not just unstable.
 - For DNS/browser issues, reproduce the exact hostname and proxy node. On this
   machine, mihomo TUN can make DNS behavior node-specific.
 - For Niri/session issues, check `greetd`, `niri.service`, Noctalia, fcitx5, and
