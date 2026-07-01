@@ -3,7 +3,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // ===== 应用启动 =====
-    Mod+T { spawn "alacritty"; }
+    Mod+T { spawn "kitty"; }
     Mod+E { spawn "nautilus" "--new-window"; }
     Mod+B { spawn "brave"; }
     Mod+A { spawn "noctalia-ipc" "launcher" "toggle"; }

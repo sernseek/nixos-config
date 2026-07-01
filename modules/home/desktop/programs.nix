@@ -59,6 +59,40 @@
       };
       theme = "tokyo_night";
     };
+
+    kitty = {
+      enable = true;
+      font = {
+        name = "JetBrainsMono Nerd Font";
+        size = 12;
+      };
+      settings = {
+        term = "xterm-kitty";
+        hide_window_decorations = "titlebar-only";
+        window_padding_width = 8;
+        wheel_scroll_multiplier = 5;
+        copy_on_select = "clipboard";
+
+        # 更舒服的滚动与回看
+        scrollback_lines = 10000;
+        scrollback_pager_history_size = 64; # MB, 只给 pager 用
+        scrollbar = "scrolled";
+
+        # 降噪和粘贴安全
+        enable_audio_bell = false;
+        paste_actions = "quote-urls-at-prompt,confirm,confirm-if-large";
+        strip_trailing_spaces = "smart";
+
+        # URL / hyperlink 体验
+        show_hyperlink_targets = "ctrl";
+        underline_hyperlinks = "hover";
+
+        # 关闭窗口时更稳，shell prompt 空闲窗口不计入确认
+        confirm_os_window_close = "-1 count-background";
+      };
+      themeFile = "tokyo_night_night";
+    };
+
     zellij = {
       enable = true;
       # enableFishIntegration = true;
@@ -70,6 +104,7 @@
         session_serialization = true;
         serialize_pane_viewport = true;
         serialization_interval = 60;
+        scroll_buffer_size = 50000;
       };
     };
 
