@@ -11,6 +11,20 @@ let
       outputHash = "sha256-zO1/KUJe3LvYCGlwVpNg5uDwPRD0ql/7anErb7tywC0=";
     };
   });
+  fscan = pkgs.fscan.overrideAttrs (
+    finalAttrs: _old: {
+      version = "2.2.0-rc.1";
+
+      src = pkgs.fetchFromGitHub {
+        owner = "shadow1ng";
+        repo = "fscan";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-gz2O5uiPMouHt4Ezaic/7WGQ+1LeAdTOY0s5VDtb9aE=";
+      };
+
+      vendorHash = "sha256-IlGHY0KbYsy/5Yz11XhkcS9yS8byY3vhPZiTwnJM6/Q=";
+    }
+  );
   dirsearch = pkgs.python3Packages.buildPythonApplication rec {
     pname = "dirsearch";
     version = "0.5.0-unstable-2026-06-11";
